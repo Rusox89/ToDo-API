@@ -1,0 +1,14 @@
+FROM python:3.6
+
+ARG HOST
+ARG PORT
+
+COPY . /app
+WORKDIR /app
+
+RUN pip3 install -r /app/requirements.txt
+
+CMD gunicorn \
+--bind "$HOST:$PORT" \
+-w 8 \
+runserver:app
