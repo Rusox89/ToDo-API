@@ -20,16 +20,39 @@ class Entry(MODEL):
     description = Column(TEXT())
     user = relationship("User", back_populates="entries")
 
+    def as_dict(self):
+        return {
+            'entryid': self.entryid,
+            'userid': self.userid,
+            'title': self.title,
+            'completed': self.completed,
+            'description': self.description
+        }
+
 
 class User(MODEL):
-    """ Defines a user entry """
+    """ Defines a user entry and logged user """
     __tablename__ = "user"
 
     userid = Column(INTEGER, primary_key=True)
     email = Column(VARCHAR(128), index=True)
     password = Column(VARCHAR(128))
-    entries = relationship("Entry", back_populates="user")
+    entries = relationship("Entry", back_populates="user", lazy="joined")
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.email)
 
 def get_engine(
     proto,
@@ -79,6 +102,6 @@ def get_session():
         CURRENT_CONFIG.DB_HOSTNAME,
         CURRENT_CONFIG.DB_DATABASE
     )
-    SessionClass = sessionmaker(bind=engine)
+    SessionClass = sessionmaker(bind=engine, autoflush=True)
     session = SessionClass()
     return session

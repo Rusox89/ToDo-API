@@ -24,12 +24,30 @@ class TestLogin(unittest.TestCase):
             str(route)
         )
 
-
     def test_post_successful_login(self):
         """ Test that you can login """
         response = self.session.post(
             self._route("/auth/login"),
             json=self.CREDENTIALS
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+
+    def test_logout_without_login(self):
+        """ Test that you can login """
+        response = self.session.get(
+            self._route("/auth/logout"),
+        )
+        self.assertEqual(response.status_code, 401, response.text)
+
+    def test_logout(self):
+        """ Test that you can login """
+        response = self.session.post(
+            self._route("/auth/login"),
+            json=self.CREDENTIALS
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        response = self.session.get(
+            self._route("/auth/logout")
         )
         self.assertEqual(response.status_code, 200, response.text)
 
@@ -68,26 +86,26 @@ class TestLogin(unittest.TestCase):
         self.assertEqual(response.status_code, 400, response.text)
 
     def test_put(self):
-        response = self.session.post(
+        response = self.session.put(
             self._route("/auth/login"),
-            data="{'username':'root','password',}"
+            json=self.CREDENTIALS
         )
-        self.assertEqual(response.status_code, 400, response.text)
+        self.assertEqual(response.status_code, 405, response.text)
 
     def test_delete(self):
-        response = self.session.post(
+        response = self.session.delete(
             self._route("/auth/login"),
-            data="{'username':'root','password',}"
+            json=self.CREDENTIALS
         )
-        self.assertEqual(response.status_code, 400, response.text)
+        self.assertEqual(response.status_code, 405, response.text)
 
 
     def test_get(self):
-        response = self.session.post(
+        response = self.session.get(
             self._route("/auth/login"),
-            data="{'username':'root','password',}"
+            json=self.CREDENTIALS
         )
-        self.assertEqual(response.status_code, 400, response.text)
+        self.assertEqual(response.status_code, 405, response.text)
 
 
 
@@ -96,6 +114,9 @@ class TestLogin(unittest.TestCase):
 
 def suite():
     suite = unittest.TestSuite()
+    suite.addTest(TestLogin("test_post_successful_login"))
+    suite.addTest(TestLogin("test_logout"))
+    suite.addTest(TestLogin("test_logout_without_login"))
     suite.addTest(TestLogin("test_post_successful_login"))
     suite.addTest(TestLogin("test_post_unsuccessful_credentials"))
     suite.addTest(TestLogin("test_post_wrong_type_credentials"))

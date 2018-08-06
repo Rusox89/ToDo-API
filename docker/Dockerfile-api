@@ -13,5 +13,8 @@ RUN pip3 install -r /app/requirements.txt
 
 CMD gunicorn \
 --bind ${HOST}:${PORT} \
+--log-level "debug" \
+--log-file "-" \
 -w 8 \
+--preload \
 runserver:app

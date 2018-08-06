@@ -12,6 +12,7 @@ class DevelopmentConfig(object):
     DB_PASSWORD = "toor"
     DB_DATABASE = "todo"
     DB_PROTOCOL = "postgres"
+    SECRET_KEY = os.urandom(24)
 
 
 class ProductionConfig(object):
