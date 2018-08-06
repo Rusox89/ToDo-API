@@ -15,9 +15,10 @@ class Entry(MODEL):
 
     entryid = Column(INTEGER, primary_key=True)
     userid = Column(INTEGER, ForeignKey('user.userid'), nullable=False)
-    title = Column(VARCHAR(128, collation="utf-8"), nullable=False)
+    title = Column(VARCHAR(128), nullable=False)
     completed = Column(BOOLEAN, default=False, nullable=False)
     description = Column(TEXT())
+    user = relationship("User", back_populates="entries")
 
 
 class User(MODEL):
@@ -25,8 +26,8 @@ class User(MODEL):
     __tablename__ = "user"
 
     userid = Column(INTEGER, primary_key=True)
-    email = Column(VARCHAR(128, collation="utf-8"), index=True)
-    password = Column(VARCHAR(128, collation="utf-8"))
+    email = Column(VARCHAR(128), index=True)
+    password = Column(VARCHAR(128))
     entries = relationship("Entry", back_populates="user")
 
 
@@ -46,7 +47,7 @@ def get_engine(
             host,
             dbname
         ),
-        encoding="utf-8"
+        encoding="UTF8"
     )
 
 

@@ -5,6 +5,8 @@ class DevelopmentConfig(object):
     """ Development config """
 
     SECRET_KEY = os.urandom(24)
+    HOSTNAME = "api"
+    PORT = "5000"
     DB_HOSTNAME = "db"
     DB_USERNAME = "root"
     DB_PASSWORD = "toor"

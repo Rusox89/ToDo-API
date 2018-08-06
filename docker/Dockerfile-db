@@ -10,7 +10,7 @@ ENV POSTGRES_DB=$POSTGRES_DB
 
 COPY docker/data/model_init.sh /docker-entrypoint-initdb.d/1.sh
 COPY docker/data/first_credentials.sql /docker-entrypoint-initdb.d/2.sql
-COPY docker/data/postgresql.conf /etc/postgresql/postgresql.conf
+COPY docker/data/docker-entrypoint.sh /usr/local/bin/
 
 RUN apt-get update && apt-get install -y python3 python3-pip
 
