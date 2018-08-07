@@ -14,7 +14,7 @@ class Entry(MODEL):
     __tablename__ = "entry"
 
     entryid = Column(INTEGER, primary_key=True)
-    userid = Column(INTEGER, ForeignKey('user.userid'), nullable=False)
+    userid = Column(INTEGER, ForeignKey('user.userid', ondelete="CASCADE"), nullable=False)
     title = Column(VARCHAR(128), nullable=False)
     completed = Column(BOOLEAN, default=False, nullable=False)
     description = Column(TEXT())
@@ -37,7 +37,7 @@ class User(MODEL):
     userid = Column(INTEGER, primary_key=True)
     email = Column(VARCHAR(128), index=True)
     password = Column(VARCHAR(128))
-    entries = relationship("Entry", back_populates="user", lazy="joined")
+    entries = relationship("Entry", back_populates="user", lazy="joined", cascade="all, delete-orphan")
 
     @property
     def is_authenticated(self):

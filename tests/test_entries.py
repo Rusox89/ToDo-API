@@ -23,7 +23,10 @@ class TestEntries(unittest.TestCase):
             json=self.CREDENTIALS
         )
         self.assertEqual(response.status_code, 200, response.text)
-
+        db_sess = get_session()
+        db_sess.query(User).filter(User.email != "root@localhost").delete()
+        db_sess.query(Entry).delete()
+        db_sess.commit()
 
     def _route(self, route):
         return "http://{}:{}{}".format(
@@ -63,7 +66,7 @@ class TestEntries(unittest.TestCase):
             self._route("/auth/login"),
             json={
                 'email': us.email,
-                'password': us.password
+                'password': "tset"
             }
         )
         self.assertEqual(response.status_code, 200, response.text)
@@ -101,7 +104,7 @@ class TestEntries(unittest.TestCase):
         """ Test that you can list """
         us = User(
             email = "test@localhost",
-            password = "tset"
+            password = crypt('tset')
         )
         db_sess = get_session()
         db_sess.add(us)
@@ -118,7 +121,7 @@ class TestEntries(unittest.TestCase):
             self._route("/auth/login"),
             json={
                 'email': us.email,
-                'password': us.password
+                'password': "tset"
             }
         )
         self.assertEqual(response.status_code, 200, response.text)
@@ -130,6 +133,76 @@ class TestEntries(unittest.TestCase):
         db_sess.close()
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(response.json(), entry.as_dict(), response.text)
+
+    def test_put(self):
+        """ Test that you can list """
+        us = User(
+            email = "test@localhost",
+            password = crypt('tset')
+        )
+        db_sess = get_session()
+        db_sess.add(us)
+        db_sess.commit()
+        entry = Entry(
+            userid=us.userid,
+            title="test",
+            completed=True,
+            description="test desc"
+        )
+        db_sess.add(entry)
+        db_sess.commit()
+        response = self.session.post(
+            self._route("/auth/login"),
+            json={
+                'email': us.email,
+                'password': "tset"
+            }
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+
+        response = self.session.get(
+            self._route("/todo/entry/{}".format(entry.entryid)
+            ),
+        )
+        db_sess.close()
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json(), entry.as_dict(), response.text)
+
+    def test_delete(self):
+        """ Test that you can list """
+        us = User(
+            email = "test@localhost",
+            password = crypt('tset')
+        )
+        db_sess = get_session()
+        db_sess.add(us)
+        db_sess.commit()
+        entry = Entry(
+            userid=us.userid,
+            title="test",
+            completed=True,
+            description="test desc"
+        )
+        db_sess.add(entry)
+        db_sess.commit()
+        response = self.session.post(
+            self._route("/auth/login"),
+            json={
+                'email': us.email,
+                'password': "tset"
+            }
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+
+        response = self.session.get(
+            self._route("/todo/entry/{}".format(entry.entryid)
+            ),
+        )
+        db_sess.close()
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json(), entry.as_dict(), response.text)
+
+
 
 def suite():
     suite = unittest.TestSuite()
