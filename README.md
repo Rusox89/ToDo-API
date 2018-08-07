@@ -32,6 +32,7 @@ The service is dockerized and so you will need to install Docker first to be abl
 For Debian/Ubuntu users:
 
 `sudo apt-get install -y docker.io`
+
 `sudo pip3 install docker-compose`
 
 ## How to run
@@ -54,8 +55,8 @@ The tests can be run using the below command whilst the stack is up an running (
 
 To use the API you will need some credentials at first, those credentials are
 
-- Email: root@localhost
-- Password: toor
+- Email: `root@localhost`
+- Password: `toor`
 
 This will set a cookie, and for this reason it is recommended to use `requests.session` as it will handle the cookie managment for you as long as you keep using the same session to make requests after login.
 
