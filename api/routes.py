@@ -2,7 +2,6 @@ from flask import Blueprint, abort, make_response, request
 from flask_login import current_user, login_required
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from api.models import Entry, get_session
-import logging
 import json
 
 
@@ -14,7 +13,6 @@ blueprint = Blueprint('todo', __name__, url_prefix='/todo' )
 def list_handler():
     session = get_session()
     user = current_user
-    logging.debug(user.entries)
     response = make_response(json.dumps(
            [ entry.as_dict() for entry in user.entries ]
        ), 200
@@ -84,10 +82,7 @@ def delete_handler(oid):
         ).delete()
     except (NoResultFound, MultipleResultsFound):
         abort(404)
-    response = make_response(json.dumps(
-           entry.as_dict()
-       ), 200
-    )
+    response = make_response('', 200)
     session.close()
     return response
 
@@ -97,9 +92,9 @@ def delete_handler(oid):
 def put_handler(oid):
     try:
         body = request.json
-        title = body.pop('title')
+        title = body.pop('title', None)
         completed = body.pop('completed', None)
-        description = body.pop('description')
+        description = body.pop('description', None)
         if body:
             abort(400)
 
@@ -109,9 +104,9 @@ def put_handler(oid):
             Entry.entryid == oid and Entry.userid == user.userid
         ).one()
 
-        entry.title = title
+        entry.title = title if title is not None else entry.title
         entry.completed = completed if completed is not None else entry.completed
-        entry.description = description
+        entry.description = description if description is not None else entry.description
         session.add(entry)
         session.commit()
     except (NoResultFound, MultipleResultsFound):

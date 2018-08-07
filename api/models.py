@@ -37,7 +37,7 @@ class User(MODEL):
     userid = Column(INTEGER, primary_key=True)
     email = Column(VARCHAR(128), index=True)
     password = Column(VARCHAR(128))
-    entries = relationship("Entry", back_populates="user", lazy="joined", cascade="all, delete-orphan")
+    entries = relationship("Entry", back_populates="user", lazy="joined", cascade="all, delete")
 
     @property
     def is_authenticated(self):

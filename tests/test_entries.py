@@ -160,13 +160,27 @@ class TestEntries(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200, response.text)
 
-        response = self.session.get(
+        new_entry = Entry(
+            userid=us.userid,
+            title="test_updated",
+            completed=False,
+            description="test desc updated"
+        )
+        response = self.session.put(
             self._route("/todo/entry/{}".format(entry.entryid)
             ),
+            json={
+                'title': new_entry.title,
+                'completed': new_entry.completed,
+                'description': new_entry.description
+            }
         )
-        db_sess.close()
+        db_sess.refresh(entry)
+        #entry = db_sess.query(Entry).filter(Entry.entryid == entry.entryid).one()
+
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertEqual(response.json(), entry.as_dict(), response.text)
+        self.assertEqual(entry.as_dict(), response.json(), response.text)
+        db_sess.close()
 
     def test_delete(self):
         """ Test that you can list """
@@ -194,13 +208,11 @@ class TestEntries(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200, response.text)
 
-        response = self.session.get(
-            self._route("/todo/entry/{}".format(entry.entryid)
-            ),
+        response = self.session.delete(
+            self._route("/todo/entry/{}".format(entry.entryid))
         )
-        db_sess.close()
         self.assertEqual(response.status_code, 200, response.text)
-        self.assertEqual(response.json(), entry.as_dict(), response.text)
+        db_sess.close()
 
 
 
@@ -209,6 +221,8 @@ def suite():
     suite.addTest(TestEntries("test_list"))
     suite.addTest(TestEntries("test_post"))
     suite.addTest(TestEntries("test_get"))
+    suite.addTest(TestEntries("test_delete"))
+    suite.addTest(TestEntries("test_put"))
     return suite
 
 

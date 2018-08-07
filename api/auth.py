@@ -1,6 +1,5 @@
 """ The authentication module """
 import json
-import logging
 from crypt import crypt
 from flask import request, Blueprint, make_response, abort
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
@@ -10,26 +9,19 @@ from api.models import User, get_session
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 login_manager = LoginManager()
 
-logging.basicConfig(level=logging.DEBUG)
-
 @login_manager.user_loader
 def load_user(user_email):
-    logging.debug("Loading user")
     session = get_session()
     user = None
     try:
         user = session.query(User).filter(User.email == user_email).one()
-        logging.debug("User loaded")
-        
     except (MultipleResultsFound, NoResultFound):
-        logging.debug("No user found with id {}".format(str(uid)))
-
+        pass
     session.close()
     return user
 
 @auth.route('/login', methods=['POST'])
 def login():
-    logging.debug("Logging in")
     body = request.json
     received_user_email = body['email']
     if not (isinstance(body['email'], str) and isinstance(body['password'], str)):
