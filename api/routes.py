@@ -11,6 +11,7 @@ blueprint = Blueprint('todo', __name__, url_prefix='/todo' )
 @blueprint.route('/entry', methods=['GET'])
 @login_required
 def list_handler():
+    """ List todo entries of logged in user """
     session = get_session()
     user = current_user
     response = make_response(json.dumps(
@@ -24,6 +25,7 @@ def list_handler():
 @blueprint.route('/entry', methods=['POST'])
 @login_required
 def post_handler():
+    """ Post todo entries for logged in user """
     try:
         body = request.json
         title = body.pop('title')
@@ -55,6 +57,7 @@ def post_handler():
 @blueprint.route('/entry/<int:oid>', methods=['GET'])
 @login_required
 def get_handler(oid):
+    """ Get specific todo entry for logged in user """
     try:
         user = current_user
         session = get_session()
@@ -74,6 +77,7 @@ def get_handler(oid):
 @blueprint.route('/entry/<int:oid>', methods=['DELETE'])
 @login_required
 def delete_handler(oid):
+    """ Delete specific todo entry for logged in user """
     try:
         user = current_user
         session = get_session()
@@ -90,6 +94,7 @@ def delete_handler(oid):
 @blueprint.route('/entry/<int:oid>', methods=['PUT'])
 @login_required
 def put_handler(oid):
+    """ Update specific todo entry for logged in user """
     try:
         body = request.json
         title = body.pop('title', None)
@@ -104,6 +109,7 @@ def put_handler(oid):
             Entry.entryid == oid and Entry.userid == user.userid
         ).one()
 
+        # Can be improved
         entry.title = title if title is not None else entry.title
         entry.completed = completed if completed is not None else entry.completed
         entry.description = description if description is not None else entry.description

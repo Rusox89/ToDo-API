@@ -83,7 +83,7 @@ class TestEntries(unittest.TestCase):
         self.assertEqual(response.status_code, 200, response.text)
 
     def test_post(self):
-        """ Test that you can list """
+        """ Test that you can post """
         response = self.session.post(
             self._route("/todo/entry"),
             json={
@@ -101,7 +101,7 @@ class TestEntries(unittest.TestCase):
         self.assertEqual(response.json(), entry.as_dict(), response.text)
 
     def test_get(self):
-        """ Test that you can list """
+        """ Test that you can get """
         us = User(
             email = "test@localhost",
             password = crypt('tset')
@@ -135,7 +135,7 @@ class TestEntries(unittest.TestCase):
         self.assertEqual(response.json(), entry.as_dict(), response.text)
 
     def test_put(self):
-        """ Test that you can list """
+        """ Test that you can put """
         us = User(
             email = "test@localhost",
             password = crypt('tset')
@@ -176,14 +176,13 @@ class TestEntries(unittest.TestCase):
             }
         )
         db_sess.refresh(entry)
-        #entry = db_sess.query(Entry).filter(Entry.entryid == entry.entryid).one()
 
         self.assertEqual(response.status_code, 200, response.text)
         self.assertEqual(entry.as_dict(), response.json(), response.text)
         db_sess.close()
 
     def test_delete(self):
-        """ Test that you can list """
+        """ Test that you can delete """
         us = User(
             email = "test@localhost",
             password = crypt('tset')
